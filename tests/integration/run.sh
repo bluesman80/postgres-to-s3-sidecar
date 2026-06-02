@@ -100,8 +100,9 @@ assert_s3_object_exists() {
 }
 
 extract_s3_key() {
-  # Parse "uploaded to s3://test-bucket/<key>" from backup output
-  echo "$1" | grep -oP "(?<=s3://test-bucket/)[\w/._-]+" | tail -1
+  # Parse "uploaded to s3://test-bucket/<key>" from backup output.
+  # Uses sed (POSIX) instead of grep -P so this works on macOS (BSD grep).
+  echo "$1" | sed -n 's|.*s3://test-bucket/\([^ ]*\).*|\1|p' | tail -1
 }
 
 # ─── Test 1: Single DB backup ─────────────────────────────────────────────────
