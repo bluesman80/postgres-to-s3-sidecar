@@ -11,7 +11,7 @@ jobs:
     name: Unit tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install bats-core
         run: |
@@ -31,7 +31,7 @@ jobs:
         pg_version: [13, 14, 15, 16, 17, 18]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Run integration tests
         run: bash tests/integration/run.sh ${{ matrix.pg_version }}
