@@ -12,4 +12,4 @@ RUN chmod +x /entrypoint.sh
 ENV BACKUP_CRON_SCHEDULE="0 2 * * *"
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["crond", "-f", "-l", "2"]
+CMD ["crond", "-f", "-l", "2", "-c", "/tmp/crontabs"]

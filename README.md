@@ -132,7 +132,7 @@ The `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` variables map to whatever cr
 
 ## Lifecycle Hooks
 
-Mount a local `hooks/` directory to `/hooks` inside the container and the backup script will source any executable scripts it finds there before and after each backup run.
+Mount a local `hooks/` directory to `/hooks` inside the container. The backup script checks for two specific executable files and runs them at fixed points in the backup lifecycle:
 
 | Script | When it runs |
 |---|---|

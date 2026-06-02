@@ -21,6 +21,15 @@ for var_name in "${required_vars[@]}"; do
     exit 1
   fi
 done
+# Validate mutually exclusive backup mode
+if [[ "${POSTGRES_BACKUP_ALL:-}" == "true" && -n "${POSTGRES_DB:-}" ]]; then
+  log_error "POSTGRES_DB and POSTGRES_BACKUP_ALL=true are mutually exclusive. Set exactly one."
+  exit 1
+fi
+if [[ "${POSTGRES_BACKUP_ALL:-}" != "true" && -z "${POSTGRES_DB:-}" ]]; then
+  log_error "Neither POSTGRES_DB nor POSTGRES_BACKUP_ALL=true is set. Exactly one must be provided."
+  exit 1
+fi
 
 POSTGRES_PORT=${POSTGRES_PORT:-5432}
 S3_PREFIX=${S3_PREFIX:-backups}
