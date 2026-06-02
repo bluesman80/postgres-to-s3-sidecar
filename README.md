@@ -202,6 +202,51 @@ For single-db restores, add `--clean` to `pg_restore` if you want to drop and re
 
 ---
 
+## Contributing
+
+### Prerequisites
+
+- Docker (with the Compose plugin)
+- [bats-core](https://github.com/bats-core/bats-core) v1.5+ for unit tests
+
+Install bats-core without root:
+
+```bash
+git clone --depth 1 https://github.com/bats-core/bats-core.git /tmp/bats-core
+/tmp/bats-core/install.sh ~/.local
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+### Building the image locally
+
+The Dockerfile accepts a `PG_VERSION` build argument (13–18). Build a single version:
+
+```bash
+docker build --build-arg PG_VERSION=18 -t postgres-s3-backup:18 .
+```
+
+### Running the tests
+
+**Unit tests** — fast, no Docker required:
+
+```bash
+bats tests/unit/
+```
+
+**Integration tests** — spins up real Postgres and MinIO containers, runs full backup and restore scenarios:
+
+```bash
+bash tests/integration/run.sh 18
+```
+
+Replace `18` with any supported major version (13–18). See [`tests/README.md`](tests/README.md) for a full breakdown of what each test covers.
+
+### Publishing images
+
+Image publishing is handled automatically by the `publish.yml` GitHub Actions workflow on every push to `main`. Contributors cannot push to `ghcr.io/bluesman80/` directly — open a pull request instead, and images will be published once it is merged.
+
+---
+
 ## License
 
 MIT. See [LICENSE](LICENSE) for the full text.
