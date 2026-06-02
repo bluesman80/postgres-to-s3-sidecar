@@ -36,7 +36,7 @@ docker run -d \
   -e AWS_ACCESS_KEY_ID=YOUR_ACCESS_KEY_ID \
   -e AWS_SECRET_ACCESS_KEY=YOUR_SECRET_ACCESS_KEY \
   -e AWS_DEFAULT_REGION=us-east-1 \
-  ghcr.io/your-org/postgres-s3-backup:18
+  ghcr.io/bluesman80/postgres-s3-backup:18
 ```
 
 The container connects to the database at `POSTGRES_HOST`, dumps `mydb`, and uploads a compressed file to `s3://my-backups/backups/` every night at 02:00 UTC by default.
@@ -84,7 +84,7 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   backup:
-    image: ghcr.io/your-org/postgres-s3-backup:18
+    image: ghcr.io/bluesman80/postgres-s3-backup:18
     depends_on:
       - db
     environment:
