@@ -13,6 +13,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 PG_VERSION="${1:-18}"
 IMAGE="postgres-s3-backup:test-${PG_VERSION}"
+AWS_CLI_IMAGE="${AWS_CLI_IMAGE:-amazon/aws-cli:2.34.59}"
 COMPOSE_FILE="${SCRIPT_DIR}/docker-compose.yml"
 COMPOSE_PROJECT="pg-s3-test-${PG_VERSION}-$$"
 HOOKS_DIR="${SCRIPT_DIR}/hooks"
@@ -94,7 +95,7 @@ assert_s3_object_exists() {
     -e AWS_ACCESS_KEY_ID=minioadmin \
     -e AWS_SECRET_ACCESS_KEY=minioadmin \
     -e AWS_DEFAULT_REGION=us-east-1 \
-    amazon/aws-cli:latest \
+    "${AWS_CLI_IMAGE}" \
     s3 ls "s3://test-bucket/${key}" \
       --endpoint-url http://minio:9000 >/dev/null 2>&1
 }
@@ -190,7 +191,7 @@ if docker run --rm \
      -e AWS_ACCESS_KEY_ID=minioadmin \
      -e AWS_SECRET_ACCESS_KEY=minioadmin \
      -e AWS_DEFAULT_REGION=us-east-1 \
-     amazon/aws-cli:latest \
+     "${AWS_CLI_IMAGE}" \
      s3 cp "s3://test-bucket/${key}" - \
        --endpoint-url http://minio:9000 2>/dev/null | gzip -t 2>/dev/null; then
   pass "Gzip integrity: downloaded file passes gzip -t"
@@ -226,7 +227,7 @@ docker run --rm \
   -e AWS_ACCESS_KEY_ID=minioadmin \
   -e AWS_SECRET_ACCESS_KEY=minioadmin \
   -e AWS_DEFAULT_REGION=us-east-1 \
-  amazon/aws-cli:latest \
+  "${AWS_CLI_IMAGE}" \
   s3 cp "s3://test-bucket/${key}" - \
     --endpoint-url http://minio:9000 2>/dev/null \
 | gunzip -c \
