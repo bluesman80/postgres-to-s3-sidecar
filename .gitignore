@@ -1,3 +1,7 @@
+# Environment files — never commit credentials
+.env
+.env.*
+
 # IntelliJ IDEA
 .idea/
 *.iml
@@ -10,6 +14,23 @@
 
 # macOS
 .DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+\#*\#
+.\#*
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
 
 # Test artifacts
 tests/integration/hooks/
