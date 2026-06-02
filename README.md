@@ -104,7 +104,11 @@ volumes:
   pgdata:
 ```
 
-Store your real credentials in a `.env` file alongside the compose file and Docker will substitute them automatically.
+Copy `.env.example` to `.env`, fill in your credentials, and Docker Compose will substitute them automatically:
+
+```bash
+cp .env.example .env
+```
 
 ---
 
