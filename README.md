@@ -33,8 +33,8 @@ docker run -d \
   -e POSTGRES_PASSWORD=secret \
   -e POSTGRES_DB=mydb \
   -e S3_BUCKET=my-backups \
-  -e AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE \
-  -e AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY \
+  -e AWS_ACCESS_KEY_ID=YOUR_ACCESS_KEY_ID \
+  -e AWS_SECRET_ACCESS_KEY=YOUR_SECRET_ACCESS_KEY \
   -e AWS_DEFAULT_REGION=us-east-1 \
   ghcr.io/your-org/postgres-s3-backup:18
 ```
