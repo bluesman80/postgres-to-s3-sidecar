@@ -45,8 +45,8 @@ setup_common() {
   export POSTGRES_PASSWORD="testpass"
   export POSTGRES_PORT="5432"
   export S3_BUCKET="test-bucket"
-  export AWS_ACCESS_KEY_ID="AKIAIOSFODNN7EXAMPLE"
-  export AWS_SECRET_ACCESS_KEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+  export AWS_ACCESS_KEY_ID="test-access-key"
+  export AWS_SECRET_ACCESS_KEY="test-secret-key"
   export AWS_DEFAULT_REGION="us-east-1"
 
   # Default: single DB mode
