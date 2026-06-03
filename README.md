@@ -36,7 +36,7 @@ docker run -d \
   -e AWS_ACCESS_KEY_ID=YOUR_ACCESS_KEY_ID \
   -e AWS_SECRET_ACCESS_KEY=YOUR_SECRET_ACCESS_KEY \
   -e AWS_DEFAULT_REGION=us-east-1 \
-  ghcr.io/your-org/postgres-s3-backup:18
+  ghcr.io/bluesman80/postgres-s3-backup:18
 ```
 
 The container connects to the database at `POSTGRES_HOST`, dumps `mydb`, and uploads a compressed file to `s3://my-backups/backups/` every night at 02:00 UTC by default.
@@ -84,7 +84,7 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   backup:
-    image: ghcr.io/your-org/postgres-s3-backup:18
+    image: ghcr.io/bluesman80/postgres-s3-backup:18
     depends_on:
       - db
     environment:
@@ -104,7 +104,11 @@ volumes:
   pgdata:
 ```
 
-Store your real credentials in a `.env` file alongside the compose file and Docker will substitute them automatically.
+Copy `.env.example` to `.env`, fill in your credentials, and Docker Compose will substitute them automatically:
+
+```bash
+cp .env.example .env
+```
 
 ---
 
@@ -199,6 +203,51 @@ gunzip -c all_backup.sql.gz | psql -h <host> -U <user> -f -
 ```
 
 For single-db restores, add `--clean` to `pg_restore` if you want to drop and recreate objects before restoring. For cluster restores, connect to the `postgres` database or a superuser role that has access across all databases.
+
+---
+
+## Contributing
+
+### Prerequisites
+
+- Docker (with the Compose plugin)
+- [bats-core](https://github.com/bats-core/bats-core) v1.5+ for unit tests
+
+Install bats-core without root:
+
+```bash
+git clone --depth 1 https://github.com/bats-core/bats-core.git /tmp/bats-core
+/tmp/bats-core/install.sh ~/.local
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+### Building the image locally
+
+The Dockerfile accepts a `PG_VERSION` build argument (13–18). Build a single version:
+
+```bash
+docker build --build-arg PG_VERSION=18 -t postgres-s3-backup:18 .
+```
+
+### Running the tests
+
+**Unit tests** — fast, no Docker required:
+
+```bash
+bats tests/unit/
+```
+
+**Integration tests** — spins up real Postgres and MinIO containers, runs full backup and restore scenarios:
+
+```bash
+bash tests/integration/run.sh 18
+```
+
+Replace `18` with any supported major version (13–18). See [`tests/README.md`](tests/README.md) for a full breakdown of what each test covers.
+
+### Publishing images
+
+Image publishing is handled automatically by the `publish.yml` GitHub Actions workflow on every push to `main`. Contributors cannot push to `ghcr.io/bluesman80/` directly — open a pull request instead, and images will be published once it is merged.
 
 ---
 
