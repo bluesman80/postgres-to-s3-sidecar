@@ -6,6 +6,9 @@ RUN apk add --no-cache aws-cli bash
 COPY backup.sh /backup.sh
 RUN chmod +x /backup.sh
 
+COPY sanity_check.sh /sanity_check.sh
+RUN chmod +x /sanity_check.sh
+
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
