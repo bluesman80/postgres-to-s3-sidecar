@@ -65,6 +65,27 @@ teardown() { teardown_common; }
   assert_contains "$output$stderr" "AWS_ACCESS_KEY_ID"
 }
 
+@test "exits 1 when POSTGRES_USER is missing" {
+  unset POSTGRES_USER
+  run --separate-stderr bash "$SANITY_SCRIPT"
+  [ "$status" -eq 1 ]
+  assert_contains "$output$stderr" "POSTGRES_USER"
+}
+
+@test "exits 1 when AWS_SECRET_ACCESS_KEY is missing" {
+  unset AWS_SECRET_ACCESS_KEY
+  run --separate-stderr bash "$SANITY_SCRIPT"
+  [ "$status" -eq 1 ]
+  assert_contains "$output$stderr" "AWS_SECRET_ACCESS_KEY"
+}
+
+@test "exits 1 when AWS_DEFAULT_REGION is missing" {
+  unset AWS_DEFAULT_REGION
+  run --separate-stderr bash "$SANITY_SCRIPT"
+  [ "$status" -eq 1 ]
+  assert_contains "$output$stderr" "AWS_DEFAULT_REGION"
+}
+
 # ── Backup mode validation ────────────────────────────────────────────────────
 
 @test "exits 1 when both POSTGRES_DB and POSTGRES_BACKUP_ALL=true are set" {

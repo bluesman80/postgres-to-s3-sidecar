@@ -3,7 +3,7 @@
 # Runs connectivity and configuration checks at container startup,
 # before the first cron job fires. Called by entrypoint.sh.
 
-set -uo pipefail
+set -euo pipefail
 
 log_info()  { echo "[$(date '+%Y-%m-%d %H:%M:%S')] [INFO]  $*"; }
 log_warn()  { echo "[$(date '+%Y-%m-%d %H:%M:%S')] [WARN]  $*"; }
@@ -73,6 +73,8 @@ pass "Cron schedule valid: ${SCHEDULE}"
 
 POSTGRES_PORT="${POSTGRES_PORT:-5432}"
 PG_RETRIES="${SANITY_CHECK_PG_RETRIES:-3}"
+# Treat 0 as 1 — zero retries would unconditionally fail the check.
+[[ "$PG_RETRIES" -lt 1 ]] && PG_RETRIES=1
 PG_RETRY_DELAY="${SANITY_CHECK_PG_RETRY_DELAY:-2}"
 
 export PGPASSWORD="$POSTGRES_PASSWORD"
