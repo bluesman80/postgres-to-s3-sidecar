@@ -12,7 +12,7 @@ echo "[$(date '+%Y-%m-%d %H:%M:%S')] [INFO]  Cron schedule set to: ${SCHEDULE} (
 # Run sanity checks only when starting the cron daemon, not for one-shot
 # invocations like 'bash /backup.sh' used in tests and manual runs.
 if [[ "${1:-}" == "crond" ]]; then
-  /sanity_check.sh
+  /sanity_check.sh || exit 1
 fi
 
 exec "$@"

@@ -120,6 +120,13 @@ teardown() { teardown_common; }
   assert_contains "$output" "[PASS] Cron schedule valid: 30 4 * * 1"
 }
 
+@test "exits 1 when BACKUP_CRON_SCHEDULE contains non-cron characters" {
+  export BACKUP_CRON_SCHEDULE="abc def ghi jkl mno"
+  run --separate-stderr bash "$SANITY_SCRIPT"
+  [ "$status" -eq 1 ]
+  assert_contains "$output$stderr" "5-field cron expression"
+}
+
 # ── PostgreSQL connectivity ───────────────────────────────────────────────────
 
 @test "exits 1 when PostgreSQL is unreachable after all retries" {
@@ -132,12 +139,27 @@ teardown() { teardown_common; }
   assert_contains "$output$stderr" "2 attempt"
 }
 
+@test "exits 1 when SANITY_CHECK_PG_RETRIES is non-numeric" {
+  export SANITY_CHECK_PG_RETRIES="yes"
+  run --separate-stderr bash "$SANITY_SCRIPT"
+  [ "$status" -eq 1 ]
+  assert_contains "$output$stderr" "SANITY_CHECK_PG_RETRIES must be a positive integer"
+}
+
+@test "exits 1 when SANITY_CHECK_PG_RETRY_DELAY is non-numeric" {
+  export SANITY_CHECK_PG_RETRY_DELAY="fast"
+  run --separate-stderr bash "$SANITY_SCRIPT"
+  [ "$status" -eq 1 ]
+  assert_contains "$output$stderr" "SANITY_CHECK_PG_RETRY_DELAY must be a non-negative integer"
+}
+
 @test "exits 1 when psql authentication fails" {
   make_stub psql 'exit 1'
   run --separate-stderr bash "$SANITY_SCRIPT"
   [ "$status" -eq 1 ]
   assert_contains "$output$stderr" "authentication failed"
 }
+
 
 @test "pg_isready is called with correct host and port but no credentials" {
   run --separate-stderr bash "$SANITY_SCRIPT"

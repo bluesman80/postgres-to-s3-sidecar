@@ -62,8 +62,7 @@ fi
 
 SCHEDULE="${BACKUP_CRON_SCHEDULE:-0 2 * * *}"
 # A valid cron expression has exactly 5 whitespace-separated fields.
-field_count=$(echo "$SCHEDULE" | awk '{print NF}')
-if [[ "$field_count" -ne 5 ]]; then
+if ! echo "$SCHEDULE" | grep -qE '^[0-9*/,\-]+ [0-9*/,\-]+ [0-9*/,\-]+ [0-9*/,\-]+ [0-9*/,\-]+$'; then
   fail "BACKUP_CRON_SCHEDULE does not look like a valid 5-field cron expression: '${SCHEDULE}'"
 fi
 
@@ -73,9 +72,15 @@ pass "Cron schedule valid: ${SCHEDULE}"
 
 POSTGRES_PORT="${POSTGRES_PORT:-5432}"
 PG_RETRIES="${SANITY_CHECK_PG_RETRIES:-3}"
+if ! [[ "$PG_RETRIES" =~ ^[0-9]+$ ]]; then
+  fail "SANITY_CHECK_PG_RETRIES must be a positive integer, got: '${PG_RETRIES}'"
+fi
 # Treat 0 as 1 — zero retries would unconditionally fail the check.
 [[ "$PG_RETRIES" -lt 1 ]] && PG_RETRIES=1
 PG_RETRY_DELAY="${SANITY_CHECK_PG_RETRY_DELAY:-2}"
+if ! [[ "$PG_RETRY_DELAY" =~ ^[0-9]+$ ]]; then
+  fail "SANITY_CHECK_PG_RETRY_DELAY must be a non-negative integer, got: '${PG_RETRY_DELAY}'"
+fi
 
 export PGPASSWORD="$POSTGRES_PASSWORD"
 
@@ -144,7 +149,7 @@ pass "S3 bucket accessible: s3://${S3_BUCKET}"
 #     and the one most often misconfigured in IAM policies.
 #     Uses the same ENDPOINT_ARGS as the actual backup upload, so it is provider-agnostic.
 if [[ "${SANITY_CHECK_SKIP_S3_WRITE_PROBE:-false}" != "true" ]]; then
-  PROBE_KEY="${S3_PREFIX}/.healthcheck"
+  PROBE_KEY=".sanity-probe"
 
   if ! echo "ok" | aws s3 cp - "s3://${S3_BUCKET}/${PROBE_KEY}" \
       --content-type "text/plain" "${ENDPOINT_ARGS[@]}" >/dev/null 2>&1; then
