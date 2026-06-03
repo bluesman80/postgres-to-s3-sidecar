@@ -61,6 +61,10 @@ The container connects to the database at `POSTGRES_HOST`, dumps `mydb`, and upl
 | `AWS_DEFAULT_REGION` | | **Yes** | AWS region (any string works for non-AWS providers) |
 | `AWS_ENDPOINT_URL` | | No | Custom endpoint URL for S3-compatible storage |
 | `BACKUP_CRON_SCHEDULE` | `0 2 * * *` | No | Cron expression controlling when backups run |
+| `SANITY_CHECK_DISABLE` | `false` | No | Set to `true` to skip all startup sanity checks |
+| `SANITY_CHECK_PG_RETRIES` | `3` | No | Number of PostgreSQL TCP connection attempts before failing |
+| `SANITY_CHECK_PG_RETRY_DELAY` | `2` | No | Seconds to wait between PostgreSQL connection retries |
+| `SANITY_CHECK_SKIP_S3_WRITE_PROBE` | `false` | No | Set to `true` to skip the S3 write-and-delete permission probe |
 
 > **\*Exactly one of `POSTGRES_DB` or `POSTGRES_BACKUP_ALL=true` must be set.** Setting both or neither will cause the backup to fail with an error.
 
