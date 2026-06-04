@@ -138,9 +138,10 @@ S3_PREFIX="${S3_PREFIX:-backups}"
 
 # 5a. Bucket reachability — works against AWS S3 and any S3-compatible provider
 #     (Cloudflare R2, MinIO, Backblaze B2, etc.) via the ENDPOINT_ARGS passthrough.
-if ! aws s3 ls "s3://${S3_BUCKET}/" "${ENDPOINT_ARGS[@]}" --max-items 1 >/dev/null 2>&1; then
+aws_ls_output=$(aws s3 ls "s3://${S3_BUCKET}/" "${ENDPOINT_ARGS[@]}" --max-items 1 2>&1) || {
+  [[ -n "$aws_ls_output" ]] && log_error "AWS CLI output: ${aws_ls_output}"
   fail "S3 bucket not accessible: s3://${S3_BUCKET} — check bucket name, credentials, and endpoint"
-fi
+}
 
 pass "S3 bucket accessible: s3://${S3_BUCKET}"
 
@@ -151,10 +152,11 @@ pass "S3 bucket accessible: s3://${S3_BUCKET}"
 if [[ "${SANITY_CHECK_SKIP_S3_WRITE_PROBE:-false}" != "true" ]]; then
   PROBE_KEY=".sanity-probe"
 
-  if ! echo "ok" | aws s3 cp - "s3://${S3_BUCKET}/${PROBE_KEY}" \
-      --content-type "text/plain" "${ENDPOINT_ARGS[@]}" >/dev/null 2>&1; then
+  aws_cp_output=$(echo "ok" | aws s3 cp - "s3://${S3_BUCKET}/${PROBE_KEY}" \
+      --content-type "text/plain" "${ENDPOINT_ARGS[@]}" 2>&1) || {
+    [[ -n "$aws_cp_output" ]] && log_error "AWS CLI output: ${aws_cp_output}"
     fail "S3 write permission check failed: could not upload to s3://${S3_BUCKET}/${PROBE_KEY}"
-  fi
+  }
 
   # Best-effort cleanup — do not fail if delete fails (some bucket policies allow
   # PutObject but not DeleteObject, which is still sufficient for backups).
