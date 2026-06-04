@@ -112,14 +112,15 @@ else
   auth_target_db="$POSTGRES_DB"
 fi
 
-if ! psql -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER" \
-     -d "$auth_target_db" -c "SELECT 1" -q --no-password >/dev/null 2>&1; then
+psql_output=$(psql -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER" \
+     -d "$auth_target_db" -c "SELECT 1" -q --no-password 2>&1) || {
+  [[ -n "$psql_output" ]] && log_error "psql output: ${psql_output}"
   if [[ "${POSTGRES_BACKUP_ALL:-}" == "true" ]]; then
     fail "PostgreSQL authentication failed (host: ${POSTGRES_HOST}, user: ${POSTGRES_USER})"
   else
     fail "PostgreSQL authentication failed or database does not exist (host: ${POSTGRES_HOST}, user: ${POSTGRES_USER}, db: ${POSTGRES_DB})"
   fi
-fi
+}
 
 if [[ "${POSTGRES_BACKUP_ALL:-}" == "true" ]]; then
   pass "PostgreSQL authentication succeeded (user: ${POSTGRES_USER})"
