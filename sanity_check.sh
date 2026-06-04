@@ -139,7 +139,7 @@ S3_PREFIX="${S3_PREFIX:-backups}"
 
 # 5a. Bucket reachability — works against AWS S3 and any S3-compatible provider
 #     (Cloudflare R2, MinIO, Backblaze B2, etc.) via the ENDPOINT_ARGS passthrough.
-aws_ls_output=$(aws s3 ls "s3://${S3_BUCKET}/" "${ENDPOINT_ARGS[@]}" --max-items 1 2>&1) || {
+aws_ls_output=$(aws s3 ls "s3://${S3_BUCKET}/" "${ENDPOINT_ARGS[@]}" 2>&1) || {
   [[ -n "$aws_ls_output" ]] && log_error "AWS CLI output: ${aws_ls_output}"
   fail "S3 bucket not accessible: s3://${S3_BUCKET} — check bucket name, credentials, and endpoint"
 }
