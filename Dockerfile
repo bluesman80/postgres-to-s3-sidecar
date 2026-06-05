@@ -1,7 +1,7 @@
 ARG PG_VERSION=18
 FROM postgres:${PG_VERSION}-alpine
 
-RUN apk add --no-cache aws-cli bash
+RUN apk add --no-cache aws-cli bash curl
 
 COPY backup.sh /backup.sh
 RUN chmod +x /backup.sh
